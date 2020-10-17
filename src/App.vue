@@ -37,6 +37,7 @@
 
         <v-main>
          <HelloWorld></HelloWorld>
+          {{ foo }}
         </v-main>
 
         <v-footer app>
@@ -56,8 +57,16 @@ import { Component, Vue } from 'vue-property-decorator'
 })
 export default class App extends Vue {
   drawer = false
+  foo = ''
   mounted () {
     this.$vuetify.theme.dark = true
+    if ('getWakeLock' in navigator) {
+      console.log('👍', 'navigator.getWakeLock is supported')
+      this.foo = 'wake lock supported'
+    } else {
+      console.warn('navigator.getWakeLock is not supported')
+      this.foo = 'wake lock not supported'
+    }
   }
 }
 </script>
