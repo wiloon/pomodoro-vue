@@ -2,10 +2,13 @@
   <v-container>
     <p>Type: {{ type }}</p>
     <p>Start: {{ timestampStr }}</p>
-    <p>Last: {{ pomodoroTimeLast }}</p>
-    <p>Left: {{ pomodoroTimeLeft }}</p>
+    <v-row>
+      <v-col cols="1">{{ pomodoroTimeLast }}</v-col>
+      <v-col cols="10"> <v-progress-linear v-bind:value="progress" dark bottom ></v-progress-linear></v-col>
+      <v-col cols="1">{{ pomodoroTimeLeft }}</v-col>
+    </v-row>
     <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
-    <v-btn v-on:click="fullScreen" >Full Screen</v-btn>
+    <v-btn v-on:click="fullScreen">Full Screen</v-btn>
   </v-container>
 </template>
 
@@ -24,6 +27,7 @@ export default class HelloWorld extends Vue {
   pomodoroTimeLeft = ''
   tickBtnColor = 'primary'
   duration = 25
+  progress = 0
 
   fullScreen (): void {
     if (!document.fullscreenElement) {
@@ -57,6 +61,8 @@ export default class HelloWorld extends Vue {
     if (left > 0) {
       this.pomodoroTimeLeft = left.toFixed(2)
       this.pomodoroTimeLast = last.toFixed(2)
+      this.progress = (last / this.duration) * 100
+      console.log(last + ', ' + this.progress)
     } else {
       this.pomodoroTimeLeft = '0'
       this.pomodoroTimeLast = String(this.duration)
