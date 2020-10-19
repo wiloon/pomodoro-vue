@@ -51,7 +51,7 @@
 <script lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import { Component, Vue } from 'vue-property-decorator'
-import { foo } from './assets/foo.js'
+import { wakeLock } from './assets/keep-screen-on.js'
 
 @Component({
   components: { HelloWorld }
@@ -59,20 +59,10 @@ import { foo } from './assets/foo.js'
 export default class App extends Vue {
   drawer = false
   foo = ''
-  bar = ''
 
   mounted () {
     this.$vuetify.theme.dark = true
-    if ('getWakeLock' in navigator) {
-      console.log('ok', 'navigator.getWakeLock is supported')
-      this.foo = 'wake lock supported'
-    } else {
-      console.warn('navigator.getWakeLock is not supported')
-      this.foo = 'wake lock not supported'
-    }
-    console.log('invoke js')
-    foo()
-    console.log('invoke js.')
+    wakeLock()
   }
 }
 </script>

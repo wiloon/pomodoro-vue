@@ -1,17 +1,13 @@
-
-export default {
-  toggleWakeLock () {
-    if ('getWakeLock' in navigator) {
-      console.log('ok', 'navigator.getWakeLock is supported')
-    } else {
-      console.warn('navigator.getWakeLock is not supported')
+export function wakeLock () {
+  if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
+    console.log('wakeLock supported')
+    try {
+      navigator.wakeLock.request('screen')
+      console.log('Wake Lock is active')
+    } catch (e) {
+      console.error(`${e.name}, ${e.message}`)
     }
-    if ('WakeLock' in window && 'request' in window.WakeLock) {
-      this.bar = 'wake in WakeLock'
-    }
-
-    if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
-      this.bar = 'wake in wakeLock'
-    }
+  } else {
+    console.log('no wakeLock support')
   }
 }
