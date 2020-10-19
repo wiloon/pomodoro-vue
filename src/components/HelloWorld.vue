@@ -4,8 +4,8 @@
     <p>Start: {{ timestampStr }}</p>
     <v-row>
       <v-col cols="1">{{ pomodoroTimeLast }}</v-col>
-      <v-col cols="10"> <v-progress-linear v-bind:value="progress" dark bottom ></v-progress-linear></v-col>
-      <v-col cols="1">{{ pomodoroTimeLeft }}</v-col>
+      <v-col cols="9"> <v-progress-linear v-bind:value="progress" dark bottom ></v-progress-linear></v-col>
+      <v-col cols="2">{{ pomodoroTimeLeft }}</v-col>
     </v-row>
     <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
     <v-btn v-on:click="fullScreen">Full Screen</v-btn>
