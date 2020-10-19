@@ -51,6 +51,7 @@
 <script lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import { Component, Vue } from 'vue-property-decorator'
+import { foo } from './assets/foo.js'
 
 @Component({
   components: { HelloWorld }
@@ -69,13 +70,9 @@ export default class App extends Vue {
       console.warn('navigator.getWakeLock is not supported')
       this.foo = 'wake lock not supported'
     }
-
-    if ('WakeLock' in window && 'request' in window.WakeLock) {
-      this.bar = 'wake in WakeLock'
-    }
-    if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
-      this.bar = 'wake in wakeLock'
-    }
+    console.log('invoke js')
+    foo()
+    console.log('invoke js.')
   }
 }
 </script>
