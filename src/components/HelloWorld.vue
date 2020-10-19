@@ -37,7 +37,8 @@ export default class HelloWorld extends Vue {
     this.timestamp = new Date()
     this.timestampStr = this.timestamp.toLocaleString()
 
-    this.pomodoroTime = '0'
+    this.pomodoroTimeLast = '0'
+    this.pomodoroTimeLeft = String(this.duration)
     if (this.type === '' || this.type === 'short') {
       this.type = 'long'
       this.duration = 25
@@ -58,7 +59,7 @@ export default class HelloWorld extends Vue {
       this.pomodoroTimeLast = last.toFixed(2)
     } else {
       this.pomodoroTimeLeft = '0'
-      this.pomodoroTimeLast = this.duration
+      this.pomodoroTimeLast = String(this.duration)
       if (this.tickBtnColor === 'primary') {
         this.tickBtnColor = 'error'
       } else {
