@@ -2,7 +2,8 @@
   <v-container>
     <p>Type: {{ type }}</p>
     <p>Start: {{ timestampStr }}</p>
-    <p>Left: {{ pomodoroTime }}</p>
+    <p>Last: {{ pomodoroTimeLast }}</p>
+    <p>Left: {{ pomodoroTimeLeft }}</p>
     <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
     <v-btn v-on:click="fullScreen" >Full Screen</v-btn>
   </v-container>
@@ -19,8 +20,10 @@ export default class HelloWorld extends Vue {
   timestampStr = this.timestamp.toLocaleString()
   timer = 0
   type = 'long'
-  pomodoroTime = ''
+  pomodoroTimeLast = ''
+  pomodoroTimeLeft = ''
   tickBtnColor = 'primary'
+  duration = 25
 
   fullScreen (): void {
     if (!document.fullscreenElement) {
@@ -37,19 +40,25 @@ export default class HelloWorld extends Vue {
     this.pomodoroTime = '0'
     if (this.type === '' || this.type === 'short') {
       this.type = 'long'
+      this.duration = 25
     } else {
       this.type = 'short'
+      this.duration = 5
     }
     this.tickBtnColor = 'primary'
   }
 
   updateTimestamp (): void {
     const diff = new Date().getTime() - this.timestamp.getTime()
-    const result = diff / (1000 * 60)
+    const last = (diff / (1000 * 60))
+    const left = this.duration - last
 
-    if ((this.type === 'long' && result < 25) || (this.type === 'short' && result < 5)) {
-      this.pomodoroTime = result.toFixed(2)
+    if (left > 0) {
+      this.pomodoroTimeLeft = left.toFixed(2)
+      this.pomodoroTimeLast = last.toFixed(2)
     } else {
+      this.pomodoroTimeLeft = '0'
+      this.pomodoroTimeLast = this.duration
       if (this.tickBtnColor === 'primary') {
         this.tickBtnColor = 'error'
       } else {
