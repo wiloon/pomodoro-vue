@@ -4,6 +4,7 @@
     <p>Start: {{ timestampStr }}</p>
     <p>Left: {{ pomodoroTime }}</p>
     <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
+    <v-btn v-on:click="tick" v-bind:color="fullScreen">Full Screen</v-btn>
   </v-container>
 </template>
 
@@ -20,6 +21,14 @@ export default class HelloWorld extends Vue {
   type = 'long'
   pomodoroTime = ''
   tickBtnColor = 'primary'
+
+  fullScreen (): void {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
+  }
 
   tick (): void {
     this.timestamp = new Date()
