@@ -4,7 +4,7 @@
     <p>Start: {{ timestampStr }}</p>
     <p>Left: {{ pomodoroTime }}</p>
     <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
-    <v-btn v-on:click="tick" v-bind:color="fullScreen">Full Screen</v-btn>
+    <v-btn v-on:click="fullScreen" >Full Screen</v-btn>
   </v-container>
 </template>
 
@@ -51,7 +51,7 @@ export default class HelloWorld extends Vue {
       this.pomodoroTime = result.toFixed(2)
     } else {
       if (this.tickBtnColor === 'primary') {
-        this.tickBtnColor = 'warn'
+        this.tickBtnColor = 'error'
       } else {
         this.tickBtnColor = 'primary'
       }
