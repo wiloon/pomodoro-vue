@@ -4,7 +4,15 @@
     <p>Start: {{ timestampStr }}</p>
     <v-row>
       <v-col cols="1">{{ pomodoroTimeLast }}</v-col>
-      <v-col cols="9"> <v-progress-linear v-bind:value="progress" dark bottom ></v-progress-linear></v-col>
+      <v-col cols="9">
+        <v-progress-linear
+          v-bind:value="progress"
+          dark
+          bottom
+          v-bind:indeterminate="indeterminateValue"
+          v-bind:color="progressBarColor"
+        ></v-progress-linear>
+      </v-col>
       <v-col cols="2">{{ pomodoroTimeLeft }}</v-col>
     </v-row>
     <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
@@ -28,6 +36,8 @@ export default class HelloWorld extends Vue {
   tickBtnColor = 'primary'
   duration = 25
   progress = 0
+  indeterminateValue = false
+  progressBarColor = 'indigo'
 
   fullScreen (): void {
     if (!document.fullscreenElement) {
@@ -51,6 +61,7 @@ export default class HelloWorld extends Vue {
       this.duration = 5
     }
     this.tickBtnColor = 'primary'
+    this.indeterminateValue = false
   }
 
   updateTimestamp (): void {
@@ -68,8 +79,12 @@ export default class HelloWorld extends Vue {
       this.pomodoroTimeLast = String(this.duration)
       if (this.tickBtnColor === 'primary') {
         this.tickBtnColor = 'error'
+        this.indeterminateValue = true
+        this.progressBarColor = 'pink'
       } else {
         this.tickBtnColor = 'primary'
+        this.indeterminateValue = true
+        this.progressBarColor = 'indigo'
       }
     }
   }
