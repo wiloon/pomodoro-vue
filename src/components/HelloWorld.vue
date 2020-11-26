@@ -61,6 +61,7 @@ export default class HelloWorld extends Vue {
       this.duration = 5
     }
     this.tickBtnColor = 'primary'
+    this.progressBarColor = 'indigo'
     this.indeterminateValue = false
   }
 
