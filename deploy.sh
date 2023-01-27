@@ -1,13 +1,28 @@
 #!/bin/sh
 
-name="pomodoro"
-cd /home/wiloon/projects/pomodoro-vue || exit
+project_name="pomodoro"
+version="v0.0.1"
+
+cd ~/projects/pomodoro-vue || exit
 yarn install
 yarn build
-sudo buildah bud -t registry.wiloon.com/pomodoro:v0.0.1 .
-sudo buildah push registry.wiloon.com/pomodoro:v0.0.1
-ansible -i '192.168.50.92,' all -u root -m shell -a 'podman pull registry.wiloon.com/pomodoro:v0.0.1'
-ansible -i '192.168.50.92,' all -u root -m shell -a 'podman stop pomodoro'
-ansible -i '192.168.50.92,' all -u root -m shell -a 'podman rm pomodoro'
-ansible -i '192.168.50.92,' all -u root -m shell -a 'podman run -d --name pomodoro -p 30000:80 -v /etc/localtime:/etc/localtime:ro -v pomodoro-logs:/var/log/nginx registry.wiloon.com/pomodoro:v0.0.1'
-ansible -i '192.168.50.92,' all -u root -m shell -a 'podman ps -f name=pomodoro'
+
+export manifest_name=${project_name}-manifest
+sudo podman image ls
+sudo podman manifest rm ${manifest_name}:${version}
+sudo podman manifest rm ${manifest_name}:latest
+sudo podman image ls
+
+sudo buildah manifest create ${manifest_name}:${version}
+
+sudo buildah bud --arch=amd64 -t registry.wiloon.com/${project_name}:${version} --manifest ${manifest_name} .
+
+sudo buildah manifest push --all \
+    ${manifest_name} \
+    docker://registry.wiloon.com/${project_name}:${version}
+
+rm -rf ~/projects/pomodoro-vue/dist
+
+ansible -i '192.168.50.228,' all -u root -m copy -a 'src=~/projects/pomodoro-vue/pomodoro-k8s.yaml dest=/tmp'
+ansible -i '192.168.50.228,' all -u root -m shell -a 'kubectl delete -f /tmp/pomodoro-k8s.yaml'
+ansible -i '192.168.50.228,' all -u root -m shell -a 'kubectl create -f /tmp/pomodoro-k8s.yaml'
