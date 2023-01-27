@@ -16,6 +16,7 @@ sudo podman image ls
 sudo buildah manifest create ${manifest_name}:${version}
 
 sudo buildah bud --arch=amd64 -t registry.wiloon.com/${project_name}:${version} --manifest ${manifest_name} .
+sudo buildah bud --arch=arm64 -t registry.wiloon.com/${project_name}:${version} --manifest ${manifest_name} .
 
 sudo buildah manifest push --all \
     ${manifest_name} \
