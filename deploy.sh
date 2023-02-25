@@ -13,6 +13,8 @@ sudo podman manifest rm ${manifest_name}:${version}
 sudo podman manifest rm ${manifest_name}:latest
 sudo podman image ls
 
+sudo podman image rm registry.wiloon.com/pomodoro:v0.0.1
+
 sudo buildah bud --arch=amd64 -t registry.wiloon.com/${project_name}:${version}-amd64 .
 sudo buildah push registry.wiloon.com/${project_name}:${version}-amd64
 
