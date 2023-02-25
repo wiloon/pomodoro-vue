@@ -41,7 +41,7 @@
         </v-main>
 
         <v-footer app>
-          <span>&copy; {{ new Date().getFullYear() }}</span>
+          <span>w10n &copy; {{ new Date().getFullYear() }}</span>
         </v-footer>
       </v-app>
     </v-app>
