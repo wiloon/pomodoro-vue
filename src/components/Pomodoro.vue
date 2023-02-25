@@ -15,22 +15,33 @@
       </v-col>
       <v-col cols="2">{{ pomodoroTimeLeft }}</v-col>
     </v-row>
-    <v-btn v-on:click="tick" v-bind:color="tickBtnColor">tick</v-btn>
-    <v-btn v-on:click="fullScreen">Full Screen</v-btn>
+    <v-row>
+      <v-btn v-on:click="tick" v-bind:color="tickBtnColor" class="p-button">tick</v-btn>
+      <v-btn v-on:click="fullScreen" class="p-button">Full Screen</v-btn>
+      <v-btn v-on:click="decreaseDingInterval" class="p-button">-</v-btn>
+      <v-btn v-on:click="increaseDingInterval" class="p-button">+</v-btn>
+      Ding Interval: {{ dingInterval }}
+    </v-row>
+
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import audio0 from '../assets/y1115.mp3'
+
+const typeLong = 'L'
+const typeShort = 'S'
 
 @Component({
   components: {}
 })
-export default class HelloWorld extends Vue {
+export default class Pomodoro extends Vue {
+  dingSrc = ''
   timestamp = new Date()
   timestampStr = this.timestamp.toLocaleString()
   timer = 0
-  type = 'long'
+  type = typeLong
   pomodoroTimeLast = ''
   pomodoroTimeLeft = ''
   tickBtnColor = 'primary'
@@ -38,6 +49,20 @@ export default class HelloWorld extends Vue {
   progress = 0
   indeterminateValue = false
   progressBarColor = 'indigo'
+  dingCount = 0
+  dingInterval = 3
+
+  decreaseDingInterval (): void {
+    if (this.dingInterval > 2) {
+      this.dingInterval--
+    }
+  }
+
+  increaseDingInterval (): void {
+    if (this.dingInterval < 100) {
+      this.dingInterval++
+    }
+  }
 
   fullScreen (): void {
     if (!document.fullscreenElement) {
@@ -53,11 +78,11 @@ export default class HelloWorld extends Vue {
 
     this.pomodoroTimeLast = '0'
     this.pomodoroTimeLeft = String(this.duration)
-    if (this.type === '' || this.type === 'short') {
-      this.type = 'long'
+    if (this.type === '' || this.type === typeShort) {
+      this.type = typeLong
       this.duration = 25
     } else {
-      this.type = 'short'
+      this.type = typeShort
       this.duration = 5
     }
     this.tickBtnColor = 'primary'
@@ -74,19 +99,24 @@ export default class HelloWorld extends Vue {
       this.pomodoroTimeLeft = left.toFixed(2)
       this.pomodoroTimeLast = last.toFixed(2)
       this.progress = (last / this.duration) * 100
-      console.log(last + ', ' + this.progress)
     } else {
       this.pomodoroTimeLeft = '0'
       this.pomodoroTimeLast = String(this.duration)
-      if (this.tickBtnColor === 'primary') {
-        this.tickBtnColor = 'error'
-        this.indeterminateValue = true
-        this.progressBarColor = 'pink'
-      } else {
-        this.tickBtnColor = 'primary'
-        this.indeterminateValue = true
-        this.progressBarColor = 'indigo'
+      // if (this.tickBtnColor === 'primary') {
+      //   this.tickBtnColor = 'error'
+      //   this.indeterminateValue = true
+      //   this.progressBarColor = 'pink'
+      // } else {
+      //   this.tickBtnColor = 'primary'
+      //   this.indeterminateValue = true
+      //   this.progressBarColor = 'indigo'
+      // }
+
+      if (this.dingCount % this.dingInterval === 0) {
+        const ding = new Audio(audio0)
+        ding.play()
       }
+      this.dingCount++
     }
   }
 
@@ -95,3 +125,8 @@ export default class HelloWorld extends Vue {
   }
 }
 </script>
+<style scoped>
+.p-button {
+  margin-right: 10px;
+}
+</style>

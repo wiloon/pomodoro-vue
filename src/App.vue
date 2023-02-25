@@ -36,12 +36,11 @@
         </v-app-bar>
 
         <v-main>
-         <HelloWorld></HelloWorld>
-          {{ foo }}
+         <Pomodoro></Pomodoro>
         </v-main>
 
         <v-footer app>
-          <span>&copy; {{ new Date().getFullYear() }}</span>
+          <span>w10n &copy; {{ new Date().getFullYear() }}</span>
         </v-footer>
       </v-app>
     </v-app>
@@ -49,16 +48,15 @@
 </template>
 
 <script lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import Pomodoro from './components/Pomodoro.vue'
 import { Component, Vue } from 'vue-property-decorator'
 import { wakeLock } from './assets/keep-screen-on.js'
 
 @Component({
-  components: { HelloWorld }
+  components: { Pomodoro }
 })
 export default class App extends Vue {
   drawer = false
-  foo = ''
 
   mounted () {
     this.$vuetify.theme.dark = true
