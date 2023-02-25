@@ -36,7 +36,7 @@ const typeShort = 'S'
 @Component({
   components: {}
 })
-export default class HelloWorld extends Vue {
+export default class Pomodoro extends Vue {
   dingSrc = ''
   timestamp = new Date()
   timestampStr = this.timestamp.toLocaleString()
