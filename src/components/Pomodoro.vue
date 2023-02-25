@@ -21,6 +21,7 @@
       <v-btn v-on:click="decreaseDingInterval" class="p-button">-</v-btn>
       <v-btn v-on:click="increaseDingInterval" class="p-button">+</v-btn>
       Ding Interval: {{ dingInterval }}
+      <v-btn v-on:click="startStop" class="p-button">{{ switchLabel }}</v-btn>
     </v-row>
 
   </v-container>
@@ -50,7 +51,19 @@ export default class Pomodoro extends Vue {
   indeterminateValue = false
   progressBarColor = 'indigo'
   dingCount = 0
-  dingInterval = 3
+  dingInterval = 10
+  stop = false
+  switchLabel = 'Stop'
+
+  startStop (): void {
+    if (this.stop) {
+      this.stop = false
+      this.switchLabel = 'Stop'
+    } else {
+      this.stop = true
+      this.switchLabel = 'Start'
+    }
+  }
 
   decreaseDingInterval (): void {
     if (this.dingInterval > 2) {
@@ -91,6 +104,9 @@ export default class Pomodoro extends Vue {
   }
 
   updateTimestamp (): void {
+    if (this.stop) {
+      return
+    }
     const diff = new Date().getTime() - this.timestamp.getTime()
     const last = (diff / (1000 * 60))
     const left = this.duration - last
@@ -127,6 +143,7 @@ export default class Pomodoro extends Vue {
 </script>
 <style scoped>
 .p-button {
-  margin-right: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 </style>
