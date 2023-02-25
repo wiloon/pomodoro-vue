@@ -13,16 +13,20 @@ sudo podman manifest rm ${manifest_name}:${version}
 sudo podman manifest rm ${manifest_name}:latest
 sudo podman image ls
 
-sudo buildah manifest create ${manifest_name}:${version}
+sudo buildah bud --arch=amd64 -t registry.wiloon.com/${project_name}:${version}-amd64 .
+sudo buildah push registry.wiloon.com/${project_name}:${version}-amd64
 
-sudo buildah bud --arch=amd64 -t registry.wiloon.com/${project_name}:${version} --manifest ${manifest_name} .
-sudo buildah bud --arch=arm64 -t registry.wiloon.com/${project_name}:${version} --manifest ${manifest_name} .
-
-sudo buildah manifest push --all \
-    ${manifest_name} \
-    docker://registry.wiloon.com/${project_name}:${version}
+sudo buildah bud --arch=arm64 -t registry.wiloon.com/${project_name}:${version}-arm64 .
+sudo buildah push registry.wiloon.com/${project_name}:${version}-arm64
 
 rm -rf ~/projects/pomodoro-vue/dist
+
+buildah manifest create registry.wiloon.com/${project_name}:${version} \
+    --amend registry.wiloon.com/${project_name}:${version}-amd64 \
+    --amend registry.wiloon.com/${project_name}:${version}-arm64
+
+buildah manifest inspect registry.wiloon.com/${project_name}:${version}
+buildah manifest push --all registry.wiloon.com/${project_name}:${version}  docker://registry.wiloon.com/${project_name}:${version}
 
 ansible -i '192.168.50.228,' all -u root -m copy -a 'src=~/projects/pomodoro-vue/pomodoro-k8s.yaml dest=/tmp'
 ansible -i '192.168.50.228,' all -u root -m shell -a 'kubectl delete -f /tmp/pomodoro-k8s.yaml'
