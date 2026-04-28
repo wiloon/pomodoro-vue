@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "register-service-worker": "^1.7.1",
     "roboto-fontface": "*",
+    "tslib": "^2.8.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",
@@ -20,6 +21,7 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",

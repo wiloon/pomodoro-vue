@@ -41,7 +41,7 @@ export default class Pomodoro extends Vue {
   dingSrc = ''
   timestamp = new Date()
   timestampStr = this.timestamp.toLocaleString()
-  timer = 0
+  timer: ReturnType<typeof setInterval> | number = 0
   type = typeLong
   pomodoroTimeLast = ''
   pomodoroTimeLeft = ''

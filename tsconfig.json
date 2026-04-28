@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "noImplicitAny": false,
     "types": [
-      "webpack-env","vuetify"
+      "webpack-env","vuetify","node"
     ],
     "paths": {
       "@/*": [
