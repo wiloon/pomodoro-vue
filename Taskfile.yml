@@ -1,0 +1,15 @@
+version: '3'
+
+tasks:
+  dev:
+    desc: Start local dev server
+    cmd: pnpm dev
+
+  build:
+    desc: Build for production
+    cmd: pnpm build
+
+  preview:
+    desc: Preview production build locally
+    deps: [build]
+    cmd: pnpm preview

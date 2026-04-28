@@ -1,53 +1,51 @@
 # pomodoro-vue
 
-用 Vue 2 + Vuetify 实现的极简番茄钟，专为闲置手机常亮使用场景设计。
+A minimal Pomodoro timer built with Vue 2 + Vuetify, designed for always-on display on an idle phone.
 
-## 背景
+## Background
 
-长时间久坐对腰椎颈椎都不好。试用了几款番茄钟 APP，功能都过于复杂。核心需求只有一个：手机屏幕常亮、能看到倒计时，每半小时提醒自己起身活动。
+Sitting for long periods is hard on your back and neck. Most Pomodoro apps are overly complex. The core need is simple: keep the phone screen on with a visible countdown, and get a reminder every 30 minutes to stand up and move.
 
-用闲置手机（如 Google Pixel 3）放在显示器旁边，屏幕常亮跑番茄钟，不占用日常手机。
+The intended setup is an idle phone (e.g. Google Pixel 3) placed next to a monitor, running the timer with the screen always on, without occupying the primary phone.
 
-## 充电管理方案
+## Battery Management
 
-长时间插充电器会导致电池老化甚至鼓包。推荐搭配智能 USB 开关 + Macrodroid 实现电量区间充电：
+Keeping a phone plugged in continuously degrades the battery and can cause swelling. The recommended approach is to pair a smart USB switch with Macrodroid for threshold-based charging:
 
-- 电量低于 20% → 发指令给 USB 开关开始充电
-- 电量高于 80% → 发指令给 USB 开关断电
+- Battery below 20% → send command to USB switch to start charging
+- Battery above 80% → send command to USB switch to cut power
 
-偶发的充断失败概率极低，手动处理即可。
+Occasional failures are rare and can be handled manually.
 
-**USB 开关购买链接：** <https://item.taobao.com/item.htm?spm=a1z09.2.0.0.e1622e8dyQV00V&id=675291964059&_u=p2lc6g0aa84>
-
-## 技术栈
+## Tech Stack
 
 - Vue 2 + TypeScript
 - Vuetify 2
 - Vue Router / Vuex
-- PWA 支持
+- PWA support
 
-## 本地开发
-
-```bash
-# 安装依赖
-yarn install
-
-# 启动开发服务器
-yarn serve
-
-# 构建生产包
-yarn build
-```
-
-## 部署
-
-使用 Docker 部署，基于 nginx:alpine：
+## Development
 
 ```bash
-yarn build
-docker build -t registry.wiloon.com/pomodoro:latest .
-docker push registry.wiloon.com/pomodoro:latest
+# Install dependencies
+pnpm install
+
+# Start dev server
+pnpm serve
+
+# Build for production
+pnpm build
 ```
 
-多架构镜像（amd64 + arm64）构建参考 `deploy.sh`。
+## Deployment
+
+Deployed with Docker using nginx:alpine:
+
+```bash
+pnpm build
+sudo nerdctl build -t docker-hosted.wiloon.com/pomodoro:latest .
+sudo nerdctl push docker-hosted.wiloon.com/pomodoro:latest
+```
+
+For multi-arch builds (amd64 + arm64), see `deploy.sh`.
 
