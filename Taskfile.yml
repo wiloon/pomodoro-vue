@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  default:
+    desc: List available tasks
+    cmd: task --list
+
   dev:
     desc: Start local dev server
     cmd: pnpm dev
