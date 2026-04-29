@@ -7,6 +7,7 @@ COPY . .
 RUN pnpm build
 
 # Stage 2: serve
-FROM nginx:alpine AS prod
-COPY --from=builder /app/dist/ /usr/share/nginx/html/
-COPY nginx-default.conf /etc/nginx/conf.d/default.conf
+FROM joseluisq/static-web-server:2
+COPY --from=builder /app/dist/ /public/
+# SPA fallback: redirect 404s to index.html for Vue Router history mode
+ENV SERVER_FALLBACK_PAGE=/public/index.html
