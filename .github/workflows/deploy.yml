@@ -41,16 +41,17 @@ jobs:
     needs: build-and-push
 
     steps:
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
       - name: Deploy on EC2
         env:
-          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
           LATEST: ghcr.io/${{ github.repository }}:latest
         run: |
-          mkdir -p ~/.ssh
-          printf '%s' "$SSH_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
 
           ssh ec2-user@$EC2_HOST "
