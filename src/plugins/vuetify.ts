@@ -4,7 +4,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 export default createVuetify({
   theme: {
-    defaultTheme: 'dark'
+    defaultTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   },
   icons: {
     defaultSet: 'mdi',

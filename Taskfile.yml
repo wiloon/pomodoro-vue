@@ -5,6 +5,18 @@ tasks:
     desc: List available tasks
     cmd: task --list
 
+  install:
+    desc: Install dependencies
+    cmd: pnpm install
+
+  test:
+    desc: Run unit tests
+    cmd: pnpm test
+
+  e2e:
+    desc: Run E2E tests
+    cmd: pnpm e2e
+
   dev:
     desc: Start local dev server
     cmd: pnpm dev
