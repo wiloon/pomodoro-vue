@@ -2,8 +2,8 @@
   <v-app>
     <v-navigation-drawer v-model="drawer">
       <v-list nav>
-        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" link to="/" active-color="primary" />
-        <v-list-item prepend-icon="mdi-cog" title="Settings" link to="/settings" active-color="primary" />
+        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" link to="/" />
+        <v-list-item prepend-icon="mdi-cog" title="Settings" link to="/settings" />
       </v-list>
     </v-navigation-drawer>
 
@@ -49,5 +49,6 @@ onUnmounted(() => {
 <style>
 html, body {
   overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 </style>

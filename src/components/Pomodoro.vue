@@ -3,15 +3,15 @@
     <p>Type: {{ type }}</p>
     <p>Start: {{ timestampStr }}</p>
     <v-row align="center" no-gutters>
-      <v-col cols="2" class="text-right" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
-      <v-col cols="8">
+      <v-col cols="auto" class="pr-4" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
+      <v-col>
         <v-progress-linear
           :model-value="progress"
           :indeterminate="indeterminateValue"
           :color="progressBarColor"
         />
       </v-col>
-      <v-col cols="2" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
+      <v-col cols="auto" class="pl-4" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
     </v-row>
     <v-row>
       <v-btn @click="tick" :color="tickBtnColor" class="p-button">tick</v-btn>

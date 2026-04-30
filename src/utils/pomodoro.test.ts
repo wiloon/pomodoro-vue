@@ -5,16 +5,16 @@ describe('calcTimerState', () => {
   it('在番茄钟进行中时返回剩余时间和进度', () => {
     const state = calcTimerState(5 * 60 * 1000, 25)
     expect(state.done).toBe(false)
-    expect(state.last).toBe('5.00')
-    expect(state.left).toBe('20.00')
+    expect(state.last).toBe('5:00')
+    expect(state.left).toBe('20:00')
     expect(state.progress).toBeCloseTo(20)
   })
 
   it('时间到了时返回 done=true', () => {
     const state = calcTimerState(30 * 60 * 1000, 25)
     expect(state.done).toBe(true)
-    expect(state.left).toBe('0')
-    expect(state.last).toBe('25')
+    expect(state.left).toBe('0:00')
+    expect(state.last).toBe('25:00')
     expect(state.progress).toBe(100)
   })
 
