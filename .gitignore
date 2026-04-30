@@ -2,6 +2,10 @@
 node_modules
 /dist
 
+# Test artifacts
+test-results/
+playwright-report/
+
 
 # local env files
 .env.local

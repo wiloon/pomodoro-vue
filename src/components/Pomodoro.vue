@@ -1,22 +1,22 @@
 <template>
   <v-container>
-    <p>Type: {{ type }}</p>
-    <p>Start: {{ timestampStr }}</p>
-    <v-row align="center" no-gutters>
-      <v-col cols="auto" class="pr-4" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
-      <v-col>
+    <p class="text-h6 mb-1">{{ typeLabel }}</p>
+    <p class="text-caption text-medium-emphasis mb-4">Started {{ startTimeStr }}</p>
+    <v-row align="center" no-gutters class="mb-6">
+      <v-col cols="auto" class="pr-6" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
+      <v-col style="min-width: 0; padding-right: 24px">
         <v-progress-linear
           :model-value="progress"
           :indeterminate="indeterminateValue"
           :color="progressBarColor"
         />
       </v-col>
-      <v-col cols="auto" class="pl-4" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
+      <v-col cols="auto" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
     </v-row>
     <v-row>
-      <v-btn @click="tick" :color="tickBtnColor" class="p-button">tick</v-btn>
-      <v-btn @click="fullScreen" class="p-button">Full Screen</v-btn>
-      <v-btn @click="startStop" class="p-button">{{ switchLabel }}</v-btn>
+      <v-btn @click="tick" :color="tickBtnColor" prepend-icon="mdi-skip-next" class="p-button">Next</v-btn>
+      <v-btn @click="fullScreen" prepend-icon="mdi-fullscreen" class="p-button">Full Screen</v-btn>
+      <v-btn @click="startStop" :color="switchBtnColor" :prepend-icon="switchIcon" variant="tonal" class="p-button">{{ switchLabel }}</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -35,9 +35,10 @@ const audioMap: Record<string, string> = {
 }
 
 const timestamp = ref(new Date())
-const timestampStr = ref(timestamp.value.toLocaleString())
+const startTimeStr = ref(timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
 const timer = ref<ReturnType<typeof setInterval> | null>(null)
 const type = ref('L')
+const typeLabel = ref('Focus')
 const pomodoroTimeLast = ref('')
 const pomodoroTimeLeft = ref('')
 const tickBtnColor = ref('primary')
@@ -48,15 +49,21 @@ const progressBarColor = ref('indigo')
 const DING_INTERVAL_KEY = 'pomodoro-ding-interval'
 const dingCount = ref(0)
 const stop = ref(false)
-const switchLabel = ref('Stop')
+const switchLabel = ref('Pause')
+const switchIcon = ref('mdi-pause')
+const switchBtnColor = ref(undefined as string | undefined)
 
 function startStop() {
   if (stop.value) {
     stop.value = false
-    switchLabel.value = 'Stop'
+    switchLabel.value = 'Pause'
+    switchIcon.value = 'mdi-pause'
+    switchBtnColor.value = undefined
   } else {
     stop.value = true
-    switchLabel.value = 'Start'
+    switchLabel.value = 'Resume'
+    switchIcon.value = 'mdi-play'
+    switchBtnColor.value = 'warning'
   }
 }
 
@@ -70,9 +77,10 @@ function fullScreen() {
 
 function tick() {
   timestamp.value = new Date()
-  timestampStr.value = timestamp.value.toLocaleString()
+  startTimeStr.value = timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   pomodoroTimeLast.value = '0'
   type.value = nextTickType(type.value)
+  typeLabel.value = type.value === 'L' ? 'Focus' : 'Break'
   duration.value = durationForType(type.value)
   pomodoroTimeLeft.value = String(duration.value)
   tickBtnColor.value = 'primary'

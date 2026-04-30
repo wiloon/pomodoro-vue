@@ -5,6 +5,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5173',
     headless: true,
+    colorScheme: 'light',
   },
   webServer: {
     command: 'pnpm dev',

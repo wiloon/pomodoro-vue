@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { calcTimerState, shouldDing, nextTickType, durationForType } from './pomodoro'
 
 describe('calcTimerState', () => {
-  it('在番茄钟进行中时返回剩余时间和进度', () => {
+  it('returns elapsed time and progress when timer is running', () => {
     const state = calcTimerState(5 * 60 * 1000, 25)
     expect(state.done).toBe(false)
     expect(state.last).toBe('5:00')
@@ -10,7 +10,7 @@ describe('calcTimerState', () => {
     expect(state.progress).toBeCloseTo(20)
   })
 
-  it('时间到了时返回 done=true', () => {
+  it('returns done=true when time is up', () => {
     const state = calcTimerState(30 * 60 * 1000, 25)
     expect(state.done).toBe(true)
     expect(state.left).toBe('0:00')
@@ -18,12 +18,12 @@ describe('calcTimerState', () => {
     expect(state.progress).toBe(100)
   })
 
-  it('恰好到时返回 done=true', () => {
+  it('returns done=true when exactly at duration', () => {
     const state = calcTimerState(25 * 60 * 1000, 25)
     expect(state.done).toBe(true)
   })
 
-  it('短番茄钟 5 分钟正确计算进度', () => {
+  it('correctly calculates progress for 5-minute short timer', () => {
     const state = calcTimerState(2.5 * 60 * 1000, 5)
     expect(state.done).toBe(false)
     expect(state.progress).toBeCloseTo(50)
@@ -31,37 +31,37 @@ describe('calcTimerState', () => {
 })
 
 describe('shouldDing', () => {
-  it('dingCount 为 0 时触发', () => {
+  it('triggers when dingCount is 0', () => {
     expect(shouldDing(0, 10)).toBe(true)
   })
 
-  it('dingCount 为 dingInterval 倍数时触发', () => {
+  it('triggers when dingCount is a multiple of dingInterval', () => {
     expect(shouldDing(10, 10)).toBe(true)
     expect(shouldDing(20, 10)).toBe(true)
   })
 
-  it('非倍数时不触发', () => {
+  it('does not trigger when not a multiple', () => {
     expect(shouldDing(5, 10)).toBe(false)
     expect(shouldDing(11, 10)).toBe(false)
   })
 })
 
 describe('nextTickType', () => {
-  it('L 切换到 S', () => {
+  it('switches L to S', () => {
     expect(nextTickType('L')).toBe('S')
   })
 
-  it('S 切换到 L', () => {
+  it('switches S to L', () => {
     expect(nextTickType('S')).toBe('L')
   })
 })
 
 describe('durationForType', () => {
-  it('L 为 25 分钟', () => {
+  it('L is 25 minutes', () => {
     expect(durationForType('L')).toBe(25)
   })
 
-  it('S 为 5 分钟', () => {
+  it('S is 5 minutes', () => {
     expect(durationForType('S')).toBe(5)
   })
 })

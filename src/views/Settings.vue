@@ -3,9 +3,9 @@
     <v-row>
       <v-col cols="12">
         <v-card class="mb-4">
-          <v-card-title>提示音设置</v-card-title>
+          <v-card-title>Alert Sound</v-card-title>
           <v-card-text>
-            <v-radio-group v-model="selectedSound" label="选择计时结束提示音">
+            <v-radio-group v-model="selectedSound" label="Select alert sound">
               <v-radio
                 v-for="sound in soundOptions"
                 :key="sound.value"
@@ -19,27 +19,27 @@
               variant="tonal"
               class="mr-3"
             >
-              {{ previewing ? '停止' : '试听' }}
+              {{ previewing ? 'Stop' : 'Preview' }}
             </v-btn>
             <v-btn @click="saveSound" color="primary">
-              保存
+              Save
             </v-btn>
             <v-fade-transition>
-              <span v-if="savedSound" class="ml-3 text-success text-caption">已保存</span>
+              <span v-if="savedSound" class="ml-3 text-success text-caption">Saved</span>
             </v-fade-transition>
           </v-card-text>
         </v-card>
 
         <v-card>
-          <v-card-title>提示间隔</v-card-title>
+          <v-card-title>Ding Interval</v-card-title>
           <v-card-text>
             <div class="d-flex align-center ga-3">
               <v-btn icon="mdi-minus" variant="tonal" @click="decreaseDingInterval" />
-              <span class="text-h6">{{ dingInterval }} 秒</span>
+              <span class="text-h6">{{ dingInterval }} sec</span>
               <v-btn icon="mdi-plus" variant="tonal" @click="increaseDingInterval" />
-              <v-btn @click="saveDingInterval" color="primary" class="ml-2">保存</v-btn>
+              <v-btn @click="saveDingInterval" color="primary" class="ml-2">Save</v-btn>
               <v-fade-transition>
-                <span v-if="savedInterval" class="text-success text-caption">已保存</span>
+                <span v-if="savedInterval" class="text-success text-caption">Saved</span>
               </v-fade-transition>
             </div>
           </v-card-text>
@@ -58,8 +58,8 @@ const STORAGE_KEY = 'pomodoro-alert-sound'
 const DING_INTERVAL_KEY = 'pomodoro-ding-interval'
 
 const soundOptions = [
-  { label: '铃声', value: 'bell' },
-  { label: '雨林雨声', value: 'rain' },
+  { label: 'Bell', value: 'bell' },
+  { label: 'Rain Forest', value: 'rain' },
 ]
 
 const audioMap: Record<string, string> = {

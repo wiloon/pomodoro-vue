@@ -1,14 +1,15 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer">
+    <v-navigation-drawer v-model="drawer" theme="light">
       <v-list nav>
-        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" link to="/" />
+        <v-list-item prepend-icon="mdi-timer" title="Pomodoro" link to="/" />
         <v-list-item prepend-icon="mdi-cog" title="Settings" link to="/settings" />
+        <v-list-item prepend-icon="mdi-help-circle" title="Help" link to="/help" />
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar>
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-app-bar-nav-icon @click="drawer = !drawer" data-testid="nav-toggle" />
       <v-toolbar-title>Pomodoro</v-toolbar-title>
     </v-app-bar>
 
@@ -23,31 +24,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useTheme } from 'vuetify'
+import { ref, onMounted } from 'vue'
 import { wakeLock } from './assets/keep-screen-on.js'
 
 const drawer = ref(false)
-const theme = useTheme()
-
-const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-function onSystemThemeChange(e: MediaQueryListEvent) {
-  theme.global.name.value = e.matches ? 'dark' : 'light'
-}
 
 onMounted(() => {
   wakeLock()
-  mediaQuery.addEventListener('change', onSystemThemeChange)
-})
-
-onUnmounted(() => {
-  mediaQuery.removeEventListener('change', onSystemThemeChange)
 })
 </script>
 
 <style>
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
+  margin: 0;
   overflow: hidden;
   font-family: 'Inter', system-ui, sans-serif;
 }

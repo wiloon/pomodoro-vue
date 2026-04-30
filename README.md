@@ -1,6 +1,8 @@
 # pomodoro-vue
 
-A minimal Pomodoro timer built with Vue 2 + Vuetify, designed for always-on display on an idle phone.
+A minimal Pomodoro timer built with Vue 3 + Vuetify 3, designed for always-on display on an idle phone.
+
+Live: https://pomodoro.wiloon.com/
 
 ## Background
 
@@ -19,10 +21,11 @@ Occasional failures are rare and can be handled manually.
 
 ## Tech Stack
 
-- Vue 2 + TypeScript
-- Vuetify 2
-- Vue Router / Vuex
-- PWA support
+- Vue 3 + TypeScript
+- Vuetify 3
+- Vue Router 4
+- Vite 6
+- vite-plugin-pwa (Service Worker, offline support)
 
 ## Development
 
@@ -31,7 +34,7 @@ Occasional failures are rare and can be handled manually.
 pnpm install
 
 # Start dev server
-pnpm serve
+pnpm dev
 
 # Build for production
 pnpm build
@@ -39,13 +42,8 @@ pnpm build
 
 ## Deployment
 
-Deployed with Docker using nginx:alpine:
+Pushing to the `main` branch triggers a GitHub Actions workflow that:
 
-```bash
-pnpm build
-sudo nerdctl build -t docker-hosted.wiloon.com/pomodoro:latest .
-sudo nerdctl push docker-hosted.wiloon.com/pomodoro:latest
-```
-
-For multi-arch builds (amd64 + arm64), see `deploy.sh`.
+1. Builds the Docker image and pushes it to GHCR (`ghcr.io/wiloon/pomodoro-vue`)
+2. SSHes into EC2 and restarts the service with the new image
 
