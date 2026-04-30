@@ -46,4 +46,3 @@ Pushing to the `main` branch triggers a GitHub Actions workflow that:
 
 1. Builds the Docker image and pushes it to GHCR (`ghcr.io/wiloon/pomodoro-vue`)
 2. SSHes into EC2 and restarts the service with the new image
-

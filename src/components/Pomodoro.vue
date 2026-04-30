@@ -52,10 +52,19 @@ const indeterminateValue = ref(false)
 const progressBarColor = ref('indigo')
 const DING_INTERVAL_KEY = 'pomodoro-ding-interval'
 const dingCount = ref(0)
+const currentAudio = ref<HTMLAudioElement | null>(null)
 const stop = ref(false)
 const switchLabel = ref('Pause')
 const switchIcon = ref('mdi-pause')
 const switchBtnColor = ref(undefined as string | undefined)
+
+function stopCurrentAudio() {
+  if (currentAudio.value) {
+    currentAudio.value.pause()
+    currentAudio.value.currentTime = 0
+    currentAudio.value = null
+  }
+}
 
 function startStop() {
   if (stop.value) {
@@ -65,6 +74,7 @@ function startStop() {
     switchBtnColor.value = undefined
   } else {
     stop.value = true
+    stopCurrentAudio()
     switchLabel.value = 'Resume'
     switchIcon.value = 'mdi-play'
     switchBtnColor.value = 'warning'
@@ -80,6 +90,7 @@ function fullScreen() {
 }
 
 function tick() {
+  stopCurrentAudio()
   timestamp.value = new Date()
   startTimeStr.value = timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   pomodoroTimeLast.value = '0'
@@ -90,6 +101,9 @@ function tick() {
   tickBtnColor.value = 'primary'
   progressBarColor.value = 'indigo'
   indeterminateValue.value = false
+  if (typeof window.umami !== 'undefined') {
+    window.umami.track('Next', { session_type: typeLabel.value })
+  }
 }
 
 function updateTimestamp() {
@@ -103,8 +117,9 @@ function updateTimestamp() {
     if (shouldDing(dingCount.value, parseInt(localStorage.getItem(DING_INTERVAL_KEY) ?? '10', 10))) {
       const soundKey = localStorage.getItem(STORAGE_KEY) ?? 'bell'
       const src = audioMap[soundKey] ?? audioBell
-      const ding = new Audio(src)
-      ding.play()
+      stopCurrentAudio()
+      currentAudio.value = new Audio(src)
+      currentAudio.value.play()
     }
     dingCount.value++
   }

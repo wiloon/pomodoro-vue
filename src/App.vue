@@ -31,6 +31,9 @@ const drawer = ref(false)
 
 onMounted(() => {
   wakeLock()
+  window.addEventListener('appinstalled', () => {
+    window.umami?.track('PWA Installed')
+  })
 })
 </script>
 
@@ -42,5 +45,9 @@ onMounted(() => {
 html, body {
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
+}
+
+.v-main {
+  height: 100%;
 }
 </style>

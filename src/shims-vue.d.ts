@@ -7,3 +7,11 @@ declare module '*.vue' {
 }
 
 declare module 'vuetify/styles' { }
+
+interface UmamiTracker {
+  track(event: string, data?: Record<string, string | number | boolean>): void
+}
+
+interface Window {
+  umami?: UmamiTracker
+}
