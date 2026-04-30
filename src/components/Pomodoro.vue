@@ -1,23 +1,27 @@
 <template>
-  <v-container>
-    <p class="text-h6 mb-1">{{ typeLabel }}</p>
-    <p class="text-caption text-medium-emphasis mb-4">Started {{ startTimeStr }}</p>
-    <v-row align="center" no-gutters class="mb-6">
-      <v-col cols="auto" class="pr-6" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
-      <v-col style="min-width: 0; padding-right: 24px">
-        <v-progress-linear
-          :model-value="progress"
-          :indeterminate="indeterminateValue"
-          :color="progressBarColor"
-        />
-      </v-col>
-      <v-col cols="auto" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
-    </v-row>
-    <v-row>
-      <v-btn @click="tick" :color="tickBtnColor" prepend-icon="mdi-skip-next" class="p-button">Next</v-btn>
-      <v-btn @click="fullScreen" prepend-icon="mdi-fullscreen" class="p-button">Full Screen</v-btn>
-      <v-btn @click="startStop" :color="switchBtnColor" :prepend-icon="switchIcon" variant="tonal" class="p-button">{{ switchLabel }}</v-btn>
-    </v-row>
+  <v-container class="fill-height d-flex align-center justify-center">
+    <div class="timer-card">
+      <p class="text-h5 font-weight-medium mb-1 text-center">{{ typeLabel }}</p>
+      <p class="text-caption text-medium-emphasis mb-6 text-center">Started {{ startTimeStr }}</p>
+      <v-row align="center" no-gutters class="mb-8">
+        <v-col cols="auto" class="pr-4 text-body-2" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
+        <v-col style="min-width: 0">
+          <v-progress-linear
+            :model-value="progress"
+            :indeterminate="indeterminateValue"
+            :color="progressBarColor"
+            rounded
+            height="6"
+          />
+        </v-col>
+        <v-col cols="auto" class="pl-4 text-body-2" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
+      </v-row>
+      <v-row justify="center" no-gutters class="ga-3">
+        <v-btn @click="tick" :color="tickBtnColor" prepend-icon="mdi-skip-next">Next</v-btn>
+        <v-btn @click="fullScreen" prepend-icon="mdi-fullscreen">Full Screen</v-btn>
+        <v-btn @click="startStop" :color="switchBtnColor" :prepend-icon="switchIcon" variant="tonal">{{ switchLabel }}</v-btn>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -116,8 +120,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.p-button {
-  margin-left: 5px;
-  margin-right: 5px;
+.timer-card {
+  width: 100%;
+  max-width: 560px;
 }
 </style>

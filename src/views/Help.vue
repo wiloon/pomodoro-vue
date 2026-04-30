@@ -2,6 +2,11 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="8">
+        <p class="text-body-1 mb-6">
+          A minimal <a href="https://en.wikipedia.org/wiki/Pomodoro_Technique" target="_blank" rel="noopener">Pomodoro timer</a>
+          that alternates between focused work sessions and short breaks to help you stay productive.
+          No account required — works offline after the first visit.
+        </p>
         <v-card class="mb-4">
           <v-card-title>How it works</v-card-title>
           <v-card-text>

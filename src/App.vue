@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" theme="light">
+    <v-navigation-drawer v-model="drawer" theme="light" temporary>
       <v-list nav>
         <v-list-item prepend-icon="mdi-timer" title="Pomodoro" link to="/" />
         <v-list-item prepend-icon="mdi-cog" title="Settings" link to="/settings" />
@@ -10,7 +10,7 @@
 
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer" data-testid="nav-toggle" />
-      <v-toolbar-title>Pomodoro</v-toolbar-title>
+      <v-toolbar-title style="cursor: pointer" @click="$router.push('/')">Pomodoro</v-toolbar-title>
     </v-app-bar>
 
     <v-main>
@@ -41,7 +41,6 @@ onMounted(() => {
 
 html, body {
   margin: 0;
-  overflow: hidden;
   font-family: 'Inter', system-ui, sans-serif;
 }
 </style>
