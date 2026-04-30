@@ -22,10 +22,11 @@ Occasional failures are rare and can be handled manually.
 ## Tech Stack
 
 - Vue 3 + TypeScript
-- Vuetify 3
-- Vue Router 4
-- Vite 6
+- Vuetify 4
+- Vue Router 5
+- Vite 8
 - vite-plugin-pwa (Service Worker, offline support)
+- Umami Analytics (privacy-friendly, no cookies)
 
 ## Development
 

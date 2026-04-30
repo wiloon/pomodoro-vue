@@ -14,7 +14,7 @@ test('Next button switches type from Focus to Break', async ({ page }) => {
 
 test('settings page shows alert sound options', async ({ page }) => {
   await page.goto('/settings')
-  await expect(page.getByText('Alert Sound')).toBeVisible()
+  await expect(page.getByText('Alert Sound', { exact: true })).toBeVisible()
   await expect(page.getByText('Bell')).toBeVisible()
   await expect(page.getByText('Rain Forest')).toBeVisible()
 })
@@ -86,4 +86,37 @@ test('active Pomodoro nav item background is not dark', async ({ page }) => {
 
   // dark background brightness is near 0, light/tonal background brightness > 100 (max 255)
   expect(avgBrightness).toBeGreaterThan(100)
+})
+
+test('timer block is vertically centered in the viewport', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForSelector('[data-testid="timer-elapsed"]')
+
+  const viewport = page.viewportSize()!
+  // app-bar (64px) and footer (32px) define the usable area
+  const usableTop = 64
+  const usableBottom = viewport.height - 32
+  const usableMidY = (usableTop + usableBottom) / 2
+
+  // use the progress bar row as the center reference of the timer block
+  const elapsed = page.getByTestId('timer-elapsed')
+  const remaining = page.getByTestId('timer-remaining')
+  const elapsedBox = await elapsed.boundingBox()
+  const remainingBox = await remaining.boundingBox()
+  expect(elapsedBox).not.toBeNull()
+  expect(remainingBox).not.toBeNull()
+
+  const timerRowMidY = elapsedBox!.y + elapsedBox!.height / 2
+
+  // the timer row mid-point should be within 60px of the usable area center
+  // (60px tolerance accounts for the title and start-time text above the row)
+  expect(Math.abs(timerRowMidY - usableMidY)).toBeLessThan(60)
+
+  // the timer block should be horizontally centered:
+  // elapsed (left edge) and remaining (right edge) should be roughly symmetric around viewport center
+  const viewportMidX = viewport.width / 2
+  const blockLeft = elapsedBox!.x
+  const blockRight = remainingBox!.x + remainingBox!.width
+  const blockMidX = (blockLeft + blockRight) / 2
+  expect(Math.abs(blockMidX - viewportMidX)).toBeLessThan(40)
 })

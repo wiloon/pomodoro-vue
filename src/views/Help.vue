@@ -43,7 +43,7 @@
             <v-list lines="two">
               <v-list-item prepend-icon="mdi-skip-next">
                 <v-list-item-title>Next</v-list-item-title>
-                <v-list-item-subtitle>Start the next session immediately (Focus → Break or Break → Focus)</v-list-item-subtitle>
+                <v-list-item-subtitle>Start the next session immediately (Focus → Break or Break → Focus). Any playing alert sound stops immediately.</v-list-item-subtitle>
               </v-list-item>
               <v-list-item prepend-icon="mdi-fullscreen">
                 <v-list-item-title>Full Screen</v-list-item-title>
@@ -51,7 +51,7 @@
               </v-list-item>
               <v-list-item prepend-icon="mdi-pause">
                 <v-list-item-title>Pause / Resume</v-list-item-title>
-                <v-list-item-subtitle>Pause the current session and resume when ready</v-list-item-subtitle>
+                <v-list-item-subtitle>Pause the current session and resume when ready. Any playing alert sound stops immediately.</v-list-item-subtitle>
               </v-list-item>
             </v-list>
           </v-card-text>
@@ -69,6 +69,23 @@
               <v-list-item prepend-icon="mdi-weather-rainy">
                 <v-list-item-title>Rain Forest</v-list-item-title>
                 <v-list-item-subtitle>Ambient rain forest sound</v-list-item-subtitle>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+        </v-card>
+
+        <v-card class="mb-4">
+          <v-card-title>Session counter</v-card-title>
+          <v-card-text>
+            <p>The timer shows two counters below the start time:</p>
+            <v-list lines="two" class="mt-2">
+              <v-list-item prepend-icon="mdi-counter">
+                <v-list-item-title>Session N</v-list-item-title>
+                <v-list-item-subtitle>How many times you have pressed Next today (resets at midnight, persists across page reloads)</v-list-item-subtitle>
+              </v-list-item>
+              <v-list-item prepend-icon="mdi-calendar-today">
+                <v-list-item-title>Today N</v-list-item-title>
+                <v-list-item-subtitle>Number of completed Focus sessions today (only counts Focus → Break transitions)</v-list-item-subtitle>
               </v-list-item>
             </v-list>
           </v-card-text>

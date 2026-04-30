@@ -1,10 +1,13 @@
 <template>
-  <v-container class="fill-height d-flex align-center justify-center">
+  <v-container class="d-flex justify-center">
     <div class="timer-card">
       <p class="text-h5 font-weight-medium mb-1 text-center">{{ typeLabel }}</p>
-      <p class="text-caption text-medium-emphasis mb-6 text-center">Started {{ startTimeStr }}</p>
+      <p class="text-caption text-medium-emphasis mb-1 text-center">Started {{ startTimeStr }}</p>
+      <p class="text-caption text-medium-emphasis mb-6 text-center">
+        Session {{ sessionCount }} &nbsp;·&nbsp; Today {{ todayCount }}
+      </p>
       <v-row align="center" no-gutters class="mb-8">
-        <v-col cols="auto" class="pr-4 text-body-2" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
+        <v-col cols="auto" class="pr-4 text-body-2 timer-digit" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
         <v-col style="min-width: 0">
           <v-progress-linear
             :model-value="progress"
@@ -14,7 +17,7 @@
             height="6"
           />
         </v-col>
-        <v-col cols="auto" class="pl-4 text-body-2" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
+        <v-col cols="auto" class="pl-4 text-body-2 timer-digit" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
       </v-row>
       <v-row justify="center" no-gutters class="ga-3">
         <v-btn @click="tick" :color="tickBtnColor" prepend-icon="mdi-skip-next">Next</v-btn>
@@ -51,7 +54,29 @@ const progress = ref(0)
 const indeterminateValue = ref(false)
 const progressBarColor = ref('indigo')
 const DING_INTERVAL_KEY = 'pomodoro-ding-interval'
+const SESSION_COUNT_KEY = 'pomodoro-session-count'
+const SESSION_CURRENT_KEY = 'pomodoro-session-current'
+const SESSION_DATE_KEY = 'pomodoro-session-date'
 const dingCount = ref(0)
+
+function loadTodayCount(): number {
+  const today = new Date().toDateString()
+  if (localStorage.getItem(SESSION_DATE_KEY) !== today) {
+    localStorage.setItem(SESSION_DATE_KEY, today)
+    localStorage.setItem(SESSION_COUNT_KEY, '0')
+    localStorage.setItem(SESSION_CURRENT_KEY, '1')
+  }
+  return parseInt(localStorage.getItem(SESSION_COUNT_KEY) ?? '0', 10)
+}
+
+function loadSessionCount(): number {
+  const today = new Date().toDateString()
+  if (localStorage.getItem(SESSION_DATE_KEY) !== today) return 1
+  return parseInt(localStorage.getItem(SESSION_CURRENT_KEY) ?? '1', 10)
+}
+
+const sessionCount = ref(loadSessionCount())
+const todayCount = ref(loadTodayCount())
 const currentAudio = ref<HTMLAudioElement | null>(null)
 const stop = ref(false)
 const switchLabel = ref('Pause')
@@ -91,6 +116,20 @@ function fullScreen() {
 
 function tick() {
   stopCurrentAudio()
+  // only count completed Focus sessions
+  if (type.value === 'L') {
+    const today = new Date().toDateString()
+    if (localStorage.getItem(SESSION_DATE_KEY) !== today) {
+      localStorage.setItem(SESSION_DATE_KEY, today)
+      localStorage.setItem(SESSION_COUNT_KEY, '0')
+    }
+    const next = parseInt(localStorage.getItem(SESSION_COUNT_KEY) ?? '0', 10) + 1
+    localStorage.setItem(SESSION_COUNT_KEY, String(next))
+    todayCount.value = next
+  }
+  const nextSession = sessionCount.value + 1
+  sessionCount.value = nextSession
+  localStorage.setItem(SESSION_CURRENT_KEY, String(nextSession))
   timestamp.value = new Date()
   startTimeStr.value = timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   pomodoroTimeLast.value = '0'
@@ -138,5 +177,11 @@ onUnmounted(() => {
 .timer-card {
   width: 100%;
   max-width: 560px;
+}
+
+.timer-digit {
+  width: 3.2rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 </style>

@@ -36,7 +36,7 @@ to load (e.g. ad blocker), the app continues to work normally — analytics is b
 | Umami (self-hosted) | Requires PostgreSQL + server; more infrastructure than justified for a personal tool. Cloud Hobby tier used instead. |
 | Google Analytics 4 | Heavy (~45 KB), cookie-based, privacy concerns |
 | Cloudflare Web Analytics | Requires Cloudflare proxying the domain; adds DNS coupling |
-| Custom backend endpoint | Unnecessary complexity; Plausible covers the use case |
+| Custom backend endpoint | Unnecessary complexity; Umami covers the use case |
 
 ## Consequences
 

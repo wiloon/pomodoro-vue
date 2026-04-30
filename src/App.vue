@@ -46,8 +46,4 @@ html, body {
   margin: 0;
   font-family: 'Inter', system-ui, sans-serif;
 }
-
-.v-main {
-  height: 100%;
-}
 </style>

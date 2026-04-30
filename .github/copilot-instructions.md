@@ -5,10 +5,11 @@ A minimal Pomodoro timer web app, deployed on EC2 and distributed via Docker ima
 
 ## Tech Stack
 - **Framework**: Vue 3 (Composition API + `<script setup lang="ts">`), Options API is not allowed
-- **UI**: Vuetify 3, icons via MDI (`@mdi/font`)
-- **Router**: Vue Router 4
-- **Build**: Vite 6 + vite-plugin-vuetify (autoImport: true) + vite-plugin-pwa (Service Worker, offline support)
-- **Types**: TypeScript 5, strict mode
+- **UI**: Vuetify 4, icons via MDI (`@mdi/font`)
+- **Router**: Vue Router 5
+- **Build**: Vite 8 + vite-plugin-vuetify (autoImport: true) + vite-plugin-pwa (Service Worker, offline support)
+- **Types**: TypeScript 6, strict mode
+- **Analytics**: Umami Analytics (privacy-friendly, no cookies, custom events)
 - **Package manager**: pnpm, npm and yarn are not allowed
 - **Container**: Containerfile (podman/docker compatible), static-web-server for static file serving
 - **Task runner**: Taskfile.yml (go-task)
