@@ -6,7 +6,7 @@ Live: https://pomodoro.wiloon.com/
 
 ## Background
 
-Sitting for long periods is hard on your back and neck. Most Pomodoro apps are overly complex. The core need is simple: keep the phone screen on with a visible countdown, and get a reminder every 30 minutes to stand up and move.
+Sitting for long periods is hard on your back and neck. Most Pomodoro apps are overly complex or require an account. This one is intentionally minimal — a PWA that works offline, no sign-in, no task lists. The core need is simple: keep the phone screen on with a visible countdown, and get a reminder every 30 minutes to stand up and move.
 
 The intended setup is an idle phone (e.g. Google Pixel 3) placed next to a monitor, running the timer with the screen always on, without occupying the primary phone.
 
