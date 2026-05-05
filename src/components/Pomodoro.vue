@@ -96,13 +96,12 @@ async function requestNotificationPermission(): Promise<void> {
   await Notification.requestPermission()
 }
 
-async function startStop() {
+function startStop() {
   if (stop.value) {
     stop.value = false
     switchLabel.value = 'Pause'
     switchIcon.value = 'mdi-pause'
     switchBtnColor.value = undefined
-    await requestNotificationPermission()
   } else {
     stop.value = true
     stopCurrentAudio()
@@ -176,6 +175,7 @@ function updateTimestamp() {
 
 onMounted(() => {
   timer.value = setInterval(updateTimestamp, 1000)
+  requestNotificationPermission()
 })
 
 onUnmounted(() => {

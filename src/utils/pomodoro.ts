@@ -40,12 +40,18 @@ export function durationForType(type: string) {
   return type === 'L' ? 25 : 5
 }
 
-export function sendTimerNotification(type: 'L' | 'S'): void {
+export async function sendTimerNotification(type: 'L' | 'S'): Promise<void> {
   if (!('Notification' in window) || Notification.permission !== 'granted') return
   const title = type === 'L' ? 'Focus ended' : 'Break ended'
   const body = type === 'L' ? 'Time for a break!' : 'Ready to focus?'
+  const options = { body, icon: '/favicon.ico' }
   try {
-    new Notification(title, { body, icon: '/favicon.ico' })
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.ready
+      await reg.showNotification(title, options)
+    } else {
+      new Notification(title, options)
+    }
   } catch {
     // ignore
   }
