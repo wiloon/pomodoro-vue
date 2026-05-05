@@ -2,7 +2,7 @@
 
 A minimal Pomodoro timer built with Vue 3 + Vuetify 3, designed for always-on display on an idle phone.
 
-Live: https://pomodoro.wiloon.com/
+Live: [https://pomodoro.wiloon.com/](https://pomodoro.wiloon.com/)
 
 ## Background
 

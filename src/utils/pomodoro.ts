@@ -1,3 +1,7 @@
+// Timer session types:
+//   'L' = Long (Focus) session — 25 minutes
+//   'S' = Short (Break) session — 5 minutes
+
 function formatMinSec(minutes: number): string {
   const totalSec = Math.floor(minutes * 60)
   const m = Math.floor(totalSec / 60)
