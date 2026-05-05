@@ -32,7 +32,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import audioBell from '../assets/bell.mp3'
 import audioRain from '../assets/rain_forest.mp3'
-import { calcTimerState, shouldDing, nextTickType, durationForType } from '../utils/pomodoro'
+import { calcTimerState, shouldDing, nextTickType, durationForType, sendTimerNotification } from '../utils/pomodoro'
 
 const STORAGE_KEY = 'pomodoro-alert-sound'
 
@@ -91,12 +91,18 @@ function stopCurrentAudio() {
   }
 }
 
-function startStop() {
+async function requestNotificationPermission(): Promise<void> {
+  if (!('Notification' in window) || Notification.permission !== 'default') return
+  await Notification.requestPermission()
+}
+
+async function startStop() {
   if (stop.value) {
     stop.value = false
     switchLabel.value = 'Pause'
     switchIcon.value = 'mdi-pause'
     switchBtnColor.value = undefined
+    await requestNotificationPermission()
   } else {
     stop.value = true
     stopCurrentAudio()
@@ -133,6 +139,7 @@ function tick() {
   timestamp.value = new Date()
   startTimeStr.value = timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   pomodoroTimeLast.value = '0'
+  dingCount.value = 0
   type.value = nextTickType(type.value)
   typeLabel.value = type.value === 'L' ? 'Focus' : 'Break'
   duration.value = durationForType(type.value)
@@ -153,6 +160,9 @@ function updateTimestamp() {
   pomodoroTimeLast.value = state.last
   progress.value = state.progress
   if (state.done) {
+    if (dingCount.value === 0) {
+      sendTimerNotification(type.value as 'L' | 'S')
+    }
     if (shouldDing(dingCount.value, parseInt(localStorage.getItem(DING_INTERVAL_KEY) ?? '10', 10))) {
       const soundKey = localStorage.getItem(STORAGE_KEY) ?? 'bell'
       const src = audioMap[soundKey] ?? audioBell

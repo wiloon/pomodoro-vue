@@ -39,3 +39,14 @@ export function nextTickType(currentType: string) {
 export function durationForType(type: string) {
   return type === 'L' ? 25 : 5
 }
+
+export function sendTimerNotification(type: 'L' | 'S'): void {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return
+  const title = type === 'L' ? 'Focus ended' : 'Break ended'
+  const body = type === 'L' ? 'Time for a break!' : 'Ready to focus?'
+  try {
+    new Notification(title, { body, icon: '/favicon.ico' })
+  } catch {
+    // ignore
+  }
+}
