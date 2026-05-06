@@ -41,18 +41,33 @@ export function durationForType(type: string) {
 }
 
 export async function sendTimerNotification(type: 'L' | 'S'): Promise<void> {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return
+  if (!('Notification' in window)) {
+    console.warn('[notification] Notifications API not supported')
+    return
+  }
+  if (Notification.permission !== 'granted') {
+    console.warn('[notification] Permission not granted:', Notification.permission)
+    return
+  }
   const title = type === 'L' ? 'Focus ended' : 'Break ended'
   const body = type === 'L' ? 'Time for a break!' : 'Ready to focus?'
   const options = { body, icon: '/favicon.ico' }
   try {
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       const reg = await navigator.serviceWorker.ready
       await reg.showNotification(title, options)
+      console.log('[notification] Sent via service worker:', title)
     } else {
       new Notification(title, options)
+      console.log('[notification] Sent via Notification constructor:', title)
     }
-  } catch {
-    // ignore
+  } catch (err) {
+    console.error('[notification] Service worker path failed, trying Notification constructor:', err)
+    try {
+      new Notification(title, options)
+      console.log('[notification] Sent via Notification constructor (fallback):', title)
+    } catch (err2) {
+      console.error('[notification] Notification constructor also failed:', err2)
+    }
   }
 }
