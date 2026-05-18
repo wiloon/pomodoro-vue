@@ -1,28 +1,33 @@
 <template>
   <v-container class="d-flex justify-center">
     <div class="timer-card">
-      <p class="text-h5 font-weight-medium mb-1 text-center">{{ typeLabel }}</p>
-      <p class="text-caption text-medium-emphasis mb-1 text-center">Started {{ startTimeStr }}</p>
+      <p class="text-h5 font-weight-medium mb-1 text-center">{{ timer.typeLabel }}</p>
+      <p class="text-caption text-medium-emphasis mb-1 text-center">Started {{ timer.startTimeStr }}</p>
       <p class="text-caption text-medium-emphasis mb-6 text-center">
-        Session {{ sessionCount }} &nbsp;·&nbsp; Today {{ todayCount }}
+        Session {{ timer.sessionCount }} &nbsp;·&nbsp; Today {{ timer.todayCount }}
       </p>
       <v-row align="center" no-gutters class="mb-8">
-        <v-col cols="auto" class="pr-4 text-body-2 timer-digit" data-testid="timer-elapsed">{{ pomodoroTimeLast }}</v-col>
+        <v-col cols="auto" class="pr-4 text-body-2 timer-digit" data-testid="timer-elapsed">{{ timeLast }}</v-col>
         <v-col style="min-width: 0">
           <v-progress-linear
             :model-value="progress"
-            :indeterminate="indeterminateValue"
+            :indeterminate="isDone"
             :color="progressBarColor"
             rounded
             height="6"
           />
         </v-col>
-        <v-col cols="auto" class="pl-4 text-body-2 timer-digit" data-testid="timer-remaining">{{ pomodoroTimeLeft }}</v-col>
+        <v-col cols="auto" class="pl-4 text-body-2 timer-digit" data-testid="timer-remaining">{{ timeLeft }}</v-col>
       </v-row>
       <v-row justify="center" no-gutters class="ga-3">
-        <v-btn @click="tick" :color="tickBtnColor" prepend-icon="mdi-skip-next">Next</v-btn>
+        <v-btn @click="advance" color="primary" prepend-icon="mdi-skip-next">Next</v-btn>
         <v-btn @click="fullScreen" prepend-icon="mdi-fullscreen">Full Screen</v-btn>
-        <v-btn @click="startStop" :color="switchBtnColor" :prepend-icon="switchIcon" variant="tonal">{{ switchLabel }}</v-btn>
+        <v-btn
+          @click="togglePause"
+          :color="timer.paused ? 'warning' : undefined"
+          :prepend-icon="timer.paused ? 'mdi-play' : 'mdi-pause'"
+          variant="tonal"
+        >{{ timer.paused ? 'Resume' : 'Pause' }}</v-btn>
       </v-row>
     </div>
   </v-container>
@@ -32,56 +37,25 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import audioBell from '../assets/bell.mp3'
 import audioRain from '../assets/rain_forest.mp3'
-import { calcTimerState, shouldDing, nextTickType, durationForType, sendTimerNotification } from '../utils/pomodoro'
+import { calcTimerState, shouldDing, sendTimerNotification } from '../utils/pomodoro'
+import { useTimerStore } from '../stores/timer'
+import { useSettingsStore } from '../stores/settings'
 
-const STORAGE_KEY = 'pomodoro-alert-sound'
+const timer = useTimerStore()
+const settings = useSettingsStore()
 
 const audioMap: Record<string, string> = {
   bell: audioBell,
   rain: audioRain,
 }
 
-const timestamp = ref(new Date())
-const startTimeStr = ref(timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
-const timer = ref<ReturnType<typeof setInterval> | null>(null)
-const type = ref('L')
-const typeLabel = ref('Focus')
-const pomodoroTimeLast = ref('')
-const pomodoroTimeLeft = ref('')
-const tickBtnColor = ref('primary')
-const duration = ref(25)
+const intervalHandle = ref<ReturnType<typeof setInterval> | null>(null)
+const timeLast = ref('')
+const timeLeft = ref('')
 const progress = ref(0)
-const indeterminateValue = ref(false)
+const isDone = ref(false)
 const progressBarColor = ref('indigo')
-const DING_INTERVAL_KEY = 'pomodoro-ding-interval'
-const SESSION_COUNT_KEY = 'pomodoro-session-count'
-const SESSION_CURRENT_KEY = 'pomodoro-session-current'
-const SESSION_DATE_KEY = 'pomodoro-session-date'
-const dingCount = ref(0)
-
-function loadTodayCount(): number {
-  const today = new Date().toDateString()
-  if (localStorage.getItem(SESSION_DATE_KEY) !== today) {
-    localStorage.setItem(SESSION_DATE_KEY, today)
-    localStorage.setItem(SESSION_COUNT_KEY, '0')
-    localStorage.setItem(SESSION_CURRENT_KEY, '1')
-  }
-  return parseInt(localStorage.getItem(SESSION_COUNT_KEY) ?? '0', 10)
-}
-
-function loadSessionCount(): number {
-  const today = new Date().toDateString()
-  if (localStorage.getItem(SESSION_DATE_KEY) !== today) return 1
-  return parseInt(localStorage.getItem(SESSION_CURRENT_KEY) ?? '1', 10)
-}
-
-const sessionCount = ref(loadSessionCount())
-const todayCount = ref(loadTodayCount())
 const currentAudio = ref<HTMLAudioElement | null>(null)
-const stop = ref(false)
-const switchLabel = ref('Pause')
-const switchIcon = ref('mdi-pause')
-const switchBtnColor = ref(undefined as string | undefined)
 
 function stopCurrentAudio() {
   if (currentAudio.value) {
@@ -96,19 +70,19 @@ async function requestNotificationPermission(): Promise<void> {
   await Notification.requestPermission()
 }
 
-function startStop() {
-  if (stop.value) {
-    stop.value = false
-    switchLabel.value = 'Pause'
-    switchIcon.value = 'mdi-pause'
-    switchBtnColor.value = undefined
-  } else {
-    stop.value = true
-    stopCurrentAudio()
-    switchLabel.value = 'Resume'
-    switchIcon.value = 'mdi-play'
-    switchBtnColor.value = 'warning'
+function advance() {
+  stopCurrentAudio()
+  if (typeof window.umami !== 'undefined') {
+    window.umami.track('Next', { session_type: timer.typeLabel })
   }
+  timer.advance()
+  isDone.value = false
+  progressBarColor.value = 'indigo'
+}
+
+function togglePause() {
+  if (!timer.paused) stopCurrentAudio()
+  timer.togglePause()
 }
 
 function fullScreen() {
@@ -120,66 +94,35 @@ function fullScreen() {
 }
 
 function tick() {
-  stopCurrentAudio()
-  // only count completed Focus sessions
-  if (type.value === 'L') {
-    const today = new Date().toDateString()
-    if (localStorage.getItem(SESSION_DATE_KEY) !== today) {
-      localStorage.setItem(SESSION_DATE_KEY, today)
-      localStorage.setItem(SESSION_COUNT_KEY, '0')
-    }
-    const next = parseInt(localStorage.getItem(SESSION_COUNT_KEY) ?? '0', 10) + 1
-    localStorage.setItem(SESSION_COUNT_KEY, String(next))
-    todayCount.value = next
-  }
-  const nextSession = sessionCount.value + 1
-  sessionCount.value = nextSession
-  localStorage.setItem(SESSION_CURRENT_KEY, String(nextSession))
-  timestamp.value = new Date()
-  startTimeStr.value = timestamp.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  pomodoroTimeLast.value = '0'
-  dingCount.value = 0
-  type.value = nextTickType(type.value)
-  typeLabel.value = type.value === 'L' ? 'Focus' : 'Break'
-  duration.value = durationForType(type.value)
-  pomodoroTimeLeft.value = String(duration.value)
-  tickBtnColor.value = 'primary'
-  progressBarColor.value = 'indigo'
-  indeterminateValue.value = false
-  if (typeof window.umami !== 'undefined') {
-    window.umami.track('Next', { session_type: typeLabel.value })
-  }
-}
-
-function updateTimestamp() {
-  if (stop.value) return
-  const diffMs = new Date().getTime() - timestamp.value.getTime()
-  const state = calcTimerState(diffMs, duration.value)
-  pomodoroTimeLeft.value = state.left
-  pomodoroTimeLast.value = state.last
+  if (timer.paused) return
+  const diffMs = new Date().getTime() - timer.timestamp.getTime()
+  const state = calcTimerState(diffMs, timer.duration)
+  timeLeft.value = state.left
+  timeLast.value = state.last
   progress.value = state.progress
+  isDone.value = state.done
   if (state.done) {
-    if (dingCount.value === 0) {
-      sendTimerNotification(type.value as 'L' | 'S')
+    progressBarColor.value = 'success'
+    if (timer.dingCount === 0) {
+      sendTimerNotification(timer.type as 'L' | 'S')
     }
-    if (shouldDing(dingCount.value, parseInt(localStorage.getItem(DING_INTERVAL_KEY) ?? '10', 10))) {
-      const soundKey = localStorage.getItem(STORAGE_KEY) ?? 'bell'
-      const src = audioMap[soundKey] ?? audioBell
+    if (shouldDing(timer.dingCount, settings.dingInterval)) {
+      const src = audioMap[settings.alertSound] ?? audioBell
       stopCurrentAudio()
       currentAudio.value = new Audio(src)
       currentAudio.value.play()
     }
-    dingCount.value++
+    timer.dingCount++
   }
 }
 
 onMounted(() => {
-  timer.value = setInterval(updateTimestamp, 1000)
+  intervalHandle.value = setInterval(tick, 1000)
   requestNotificationPermission()
 })
 
 onUnmounted(() => {
-  if (timer.value) clearInterval(timer.value)
+  if (intervalHandle.value) clearInterval(intervalHandle.value)
 })
 </script>
 
