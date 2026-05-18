@@ -1,63 +1,60 @@
-name: Deploy to EC2
+name: Deploy to S3 + CloudFront
 
 on:
   push:
     branches:
       - main
 
-env:
-  IMAGE: ghcr.io/${{ github.repository }}
-
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version-file: .node-version
+          cache: pnpm
 
-      - name: Build and push image
-        uses: docker/build-push-action@v6
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          context: .
-          file: Containerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-push
-
-    steps:
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      - name: Deploy on EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          LATEST: ghcr.io/${{ github.repository }}:latest
+      - name: Upload to S3
         run: |
-          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+          aws s3 sync dist/ s3://wiloon-pomodoro \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "index.html" \
+            --exclude "sw.js" \
+            --exclude "workbox-*.js"
+          aws s3 cp dist/index.html s3://wiloon-pomodoro/index.html \
+            --cache-control "no-cache, no-store, must-revalidate"
+          aws s3 sync dist/ s3://wiloon-pomodoro \
+            --exclude "*" \
+            --include "sw.js" \
+            --include "workbox-*.js" \
+            --cache-control "no-cache, no-store, must-revalidate"
 
-          ssh ec2-user@$EC2_HOST "
-            echo '${{ secrets.GITHUB_TOKEN }}' | \
-              sudo nerdctl login ghcr.io -u ${{ github.actor }} --password-stdin
-            sudo nerdctl pull $IMAGE
-            sudo nerdctl tag $IMAGE $LATEST
-            sudo systemctl restart pomodoro
-          "
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"

@@ -1,7 +1,7 @@
 # Copilot Instructions — pomodoro-vue
 
 ## Overview
-A minimal Pomodoro timer web app, deployed on EC2 and distributed via Docker images.
+A minimal Pomodoro timer web app hosted on Cloudflare Pages.
 
 ## Tech Stack
 - **Framework**: Vue 3 (Composition API + `<script setup lang="ts">`), Options API is not allowed
@@ -11,7 +11,6 @@ A minimal Pomodoro timer web app, deployed on EC2 and distributed via Docker ima
 - **Types**: TypeScript 6, strict mode
 - **Analytics**: Umami Analytics (privacy-friendly, no cookies, custom events)
 - **Package manager**: pnpm, npm and yarn are not allowed
-- **Container**: Containerfile (podman/docker compatible), static-web-server for static file serving
 - **Task runner**: Taskfile.yml (go-task)
 
 ## Project Structure
@@ -53,6 +52,7 @@ src/
 - E2E: Playwright, tests in `e2e/pomodoro.spec.ts`, run: `task e2e`
 
 ## Deployment
-- Push to `main` branch triggers GitHub Actions
-- Builds Docker image and pushes to GHCR (ghcr.io/wiloon/pomodoro-vue)
-- Deploys to EC2 via SSH
+- Push to `main` branch triggers Cloudflare Pages to build and deploy automatically
+- Build command: `pnpm build`, output directory: `dist`
+- Custom domain: `pomodoro.wiloon.com` (DNS and Pages project managed with OpenTofu in a private config repo)
+- No GitHub Actions or secrets required for deployment
